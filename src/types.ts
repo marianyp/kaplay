@@ -2981,7 +2981,7 @@ export interface KAPLAYCtx<
      */
     loadFont(
         name: string,
-        src: string | BinaryData,
+        src: string | BufferSource,
         opt?: LoadFontOpt,
     ): Asset<FontData>;
     /**

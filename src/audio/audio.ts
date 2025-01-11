@@ -7,6 +7,20 @@ export function createEmptyAudioBuffer(ctx: AudioContext) {
     return ctx.createBuffer(1, 1, 44100);
 }
 
+export function toArrayBuffer(
+    buffer: ArrayBuffer | SharedArrayBuffer,
+): ArrayBuffer {
+    if (buffer instanceof ArrayBuffer) {
+        return buffer;
+    }
+
+    // create array buffer from shared array buffer
+    const arrayBuffer = new ArrayBuffer(buffer.byteLength);
+    new Uint8Array(arrayBuffer).set(new Uint8Array(buffer));
+
+    return arrayBuffer;
+}
+
 export const initAudio = () => {
     const audio = (() => {
         const ctx = new (
@@ -19,8 +33,10 @@ export const initAudio = () => {
         // by default browsers can only load audio async, we don't deal with that and just start with an empty audio buffer
         const burpSnd = new SoundData(createEmptyAudioBuffer(ctx));
 
+        const audioData = toArrayBuffer(burpSoundSrc.buffer.slice(0));
+
         // load that burp sound
-        ctx.decodeAudioData(burpSoundSrc.buffer.slice(0)).then((buf) => {
+        ctx.decodeAudioData(audioData).then((buf) => {
             burpSnd.buf = buf;
         }).catch((err) => {
             console.error("Failed to load burp: ", err);
